@@ -1,17 +1,20 @@
-import wmi
-import psutil
+from dataclasses import replace
+
 import GPUtil
+import psutil
+import pythoncom
+import wmi
 
 from src.domain.entities.system_info import (
     SystemInfo,
     System,
-    CPU, GPU, RAM
+    CPU,
+    GPU,
+    RAM,
 )
 
-from src.domain.repositories.system_info_repo import SystemInfoRepositories
 
-
-class WindowsSystemInfoRepository(SystemInfoRepositories):
+class WindowsSystemInfoRepository:
 
     RAM_TYPES = {
         20: "DDR",
@@ -21,86 +24,42 @@ class WindowsSystemInfoRepository(SystemInfoRepositories):
         34: "DDR5",
     }
 
-
     def __init__(self) -> None:
-        self._wmi = wmi.WMI()
+        self._cpu: CPU | None = None
+        self._ram: RAM | None = None
+        self._system: System | None = None
 
-    def get_current_info(self) -> SystemInfo:
-        _cpu=self._get_cpu()
-        _gpu=self._get_gpu()
-        _ram=self._get_ram()
-        _system=self._get_system()
+        self._load_static_info()
 
-        return SystemInfo(
-            cpu=_cpu,
-            gpu=_gpu,
-            ram=_ram,
-            system=_system
-        )
+    def _load_static_info(self) -> None:
+        pythoncom.CoInitialize()
 
-    def _get_cpu(self) -> CPU:
-        processor = self._wmi.Win32_Processor()[0]
+        try:
+            client = wmi.WMI(namespace=r"root\cimv2")
 
-        return CPU(
-            model=processor.Name.strip(),
-            manufacturer=processor.Manufacturer.strip(),
-            cores_physical=int(processor.NumberOfCores),
-            cores_logical=int(processor.NumberOfLogicalProcessors),
-            base_clock_ghz=round(
-                int(processor.MaxClockSpeed) / 1000,
-                2
-            ),
-            usage_percent=psutil.cpu_percent(interval=0.5),
-            temperature_celsius=None,
-        )
+            processor = client.Win32_Processor()[0]
 
-    def _get_gpu(self) -> GPU | None:
-        gpus = GPUtil.getGPUs()
-
-        if gpus:
-            gpu = gpus[0]
-
-            return GPU(
-                model=gpu.name,
-                manufacturer="NVIDIA",
-                vram_total_mb=int(gpu.memoryTotal),
-                usage_percent=round(gpu.load * 100, 2),
-                temperature_celsius=float(gpu.temperature),
+            self._cpu = CPU(
+                model=processor.Name.strip(),
+                manufacturer=processor.Manufacturer.strip(),
+                cores_physical=int(processor.NumberOfCores),
+                cores_logical=int(processor.NumberOfLogicalProcessors),
+                base_clock_ghz=round(
+                    int(processor.MaxClockSpeed) / 1000,
+                    2,
+                ),
+                usage_percent=0.0,
+                temperature_celsius=None,
             )
 
-        # Fallback для AMD / Intel
-        controllers = self._wmi.Win32_VideoController()
+            modules = client.Win32_PhysicalMemory()
 
-        if not controllers:
-            return None
+            total_bytes = sum(
+                int(module.Capacity)
+                for module in modules
+                if module.Capacity
+            )
 
-        gpu = controllers[0]
-        model = gpu.Name.strip()
-        manufacturer = self._detect_gpu_manufacturer(model)
-
-        vram = int(gpu.AdapterRAM or 0)
-
-        return GPU(
-            model=model,
-            manufacturer=manufacturer,
-            vram_total_mb=vram // (1024 * 1024),
-            usage_percent=0.0,
-            temperature_celsius=None,
-        )
-
-    def _get_ram(self) -> RAM:
-        modules = self._wmi.Win32_PhysicalMemory()
-
-        total_bytes = sum(
-            int(module.Capacity)
-            for module in modules
-            if module.Capacity
-        )
-
-        speed_mhz = 0
-        ram_type = "Unknown"
-
-        if modules:
             first_module = modules[0]
 
             speed_mhz = int(
@@ -113,40 +72,76 @@ class WindowsSystemInfoRepository(SystemInfoRepositories):
                 first_module.SMBIOSMemoryType or 0
             )
 
-            ram_type = self.RAM_TYPES.get(
-                memory_type,
-                "Unknown",
+            self._ram = RAM(
+                total_bytes=total_bytes,
+                ram_type=self.RAM_TYPES.get(
+                    memory_type,
+                    "Unknown",
+                ),
+                speed_mhz=speed_mhz,
+                usage_percent=0.0,
+                temperature_celsius=None,
             )
 
-        return RAM(
-            total_bytes=total_bytes,
-            ram_type=ram_type,
-            speed_mhz=speed_mhz,
-            usage_percent=psutil.virtual_memory().percent,
-            temperature_celsius=None,
+            os_info = client.Win32_OperatingSystem()[0]
+
+            self._system = System(
+                name="Windows",
+                edition=os_info.Caption.strip(),
+                version=os_info.Version,
+                architecture=os_info.OSArchitecture,
+            )
+
+        finally:
+            pythoncom.CoUninitialize()
+
+    def get_current_info(self) -> SystemInfo:
+        return SystemInfo(
+            cpu=self._get_cpu(),
+            gpu=self._get_gpu(),
+            ram=self._get_ram(),
+            system=self._system,
         )
 
-    def _get_system(self) -> System:
-        os_info = self._wmi.Win32_OperatingSystem()[0]
+    def _get_cpu(self) -> CPU:
+        return replace(
+            self._cpu,
+            usage_percent=psutil.cpu_percent(interval=None),
+        )
 
-        return System(
-            name="Windows",
-            edition=os_info.Caption.strip(),
-            version=os_info.Version,
-            architecture=os_info.OSArchitecture,
+    def _get_ram(self) -> RAM:
+        return replace(
+            self._ram,
+            usage_percent=psutil.virtual_memory().percent,
+        )
+
+    def _get_gpu(self) -> GPU | None:
+        gpus = GPUtil.getGPUs()
+
+        if not gpus:
+            return None
+
+        gpu = gpus[0]
+
+        return GPU(
+            model=gpu.name,
+            manufacturer=self._detect_gpu_manufacturer(gpu.name),
+            vram_total_mb=int(gpu.memoryTotal),
+            usage_percent=round(gpu.load * 100, 2),
+            temperature_celsius=float(gpu.temperature),
         )
 
     @staticmethod
     def _detect_gpu_manufacturer(model: str) -> str:
-        model_lower = model.lower()
+        model = model.lower()
 
-        if "nvidia" in model_lower:
+        if "nvidia" in model:
             return "NVIDIA"
 
-        if "amd" in model_lower or "radeon" in model_lower:
+        if "amd" in model or "radeon" in model:
             return "AMD"
 
-        if "intel" in model_lower:
+        if "intel" in model:
             return "Intel"
 
         return "Unknown"

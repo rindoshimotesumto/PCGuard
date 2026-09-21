@@ -1,17 +1,15 @@
 import re
 import wmi
 import psutil
+import pythoncom
 
 from datetime import datetime
 
-from domain.entities.process import Process
-from domain.repositories.process_repo import ProcessRepository
+from src.domain.entities.process import Process
+from src.domain.repositories.process_repo import ProcessRepository
 
 
 class WindowsProcessesService(ProcessRepository):
-
-    def __init__(self) -> None:
-        self._wmi = wmi.WMI()
 
     def get_all(self) -> list[Process]:
         result: list[Process] = []
@@ -149,17 +147,20 @@ class WindowsProcessesService(ProcessRepository):
 
     def _get_gpu_usage(self) -> dict[int, float]:
         """
-        Возвращает:
+        Возвращает GPU usage по PID.
 
-        {
-            PID: GPU %
-        }
+        WMI создаётся локально в текущем потоке,
+        чтобы корректно работать с FastAPI threadpool.
         """
 
         result: dict[int, float] = {}
 
+        pythoncom.CoInitialize()
+
         try:
-            engines = self._wmi.query(
+            wmi_client = wmi.WMI(namespace=r"root\cimv2")
+
+            engines = wmi_client.query(
                 """
                 SELECT Name, UtilizationPercentage
                 FROM Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine
@@ -184,8 +185,6 @@ class WindowsProcessesService(ProcessRepository):
                     engine.UtilizationPercentage or 0
                 )
 
-                # У процесса несколько GPU engines:
-                # 3D, Copy, VideoDecode и т.д.
                 current = result.get(pid, 0.0)
 
                 result[pid] = max(
@@ -195,5 +194,8 @@ class WindowsProcessesService(ProcessRepository):
 
         except Exception:
             return {}
+
+        finally:
+            pythoncom.CoUninitialize()
 
         return result
