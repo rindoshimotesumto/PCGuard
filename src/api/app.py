@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 
 from src.api.router import (
-    EthernetTrafficRouter
+    EthernetTrafficRouter,
+    ScreenshotsRouter
 )
 
 app = FastAPI(
@@ -10,6 +11,7 @@ app = FastAPI(
 )
 
 app.include_router(EthernetTrafficRouter)
+app.include_router(ScreenshotsRouter)
 
 @app.get("/")
 def ping():
