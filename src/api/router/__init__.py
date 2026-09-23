@@ -1,0 +1,1 @@
+from src.api.router.ethernet import router as EthernetTrafficRouter
