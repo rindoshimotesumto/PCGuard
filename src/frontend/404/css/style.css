@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --bg:#f4f7fb;
+  --panel:#fff;
+  --line:#e5eaf1;
+  --text:#101828;
+  --muted:#667085;
+  --blue:#1677ff;
+  --blue-soft:#edf5ff;
+  --shadow:0 10px 30px rgba(16,24,40,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Manrope','Segoe UI',Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+.topbar{
+  height:68px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+}
+.settings-btn{
+  height:40px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:12px;
+  padding:0 14px;
+  color:#344054;
+  font:700 13px 'Manrope',sans-serif;
+  cursor:pointer;
+}
+.avatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#98a2b3;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:13px;
+  font-weight:700;
+}
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.main{
+  min-height:calc(100vh - 68px);
+  display:grid;
+  place-items:center;
+  padding:32px;
+}
+.card{
+  width:min(620px,100%);
+  text-align:center;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:52px 34px;
+  box-shadow:var(--shadow);
+}
+.icon{
+  width:74px;
+  height:74px;
+  margin:0 auto 22px;
+  border-radius:20px;
+  background:var(--blue-soft);
+  display:grid;
+  place-items:center;
+}
+.icon svg{
+  width:34px;
+  height:34px;
+  stroke:var(--blue);
+  fill:none;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.code{
+  font-size:72px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-3px;
+  margin:0 0 14px;
+}
+h1{
+  margin:0;
+  font-size:24px;
+  letter-spacing:-.4px;
+}
+p{
+  margin:12px auto 0;
+  max-width:440px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+.actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:26px;
+  flex-wrap:wrap;
+}
+.btn{
+  height:44px;
+  border-radius:12px;
+  padding:0 16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font:700 13px 'Manrope',sans-serif;
+}
+.btn.primary{
+  background:var(--blue);
+  color:#fff;
+  border:1px solid var(--blue);
+}
+.btn.secondary{
+  background:#fff;
+  color:#344054;
+  border:1px solid var(--line);
+}
+@media(max-width:600px){
+  .main{padding:18px}
+  .card{padding:40px 22px}
+  .code{font-size:58px}
+}
+
+/* Settings / interface scaling */
+.top-actions,
+.top-right{
+  position:relative;
+}
+.settings-popover{
+  position:absolute;
+  top:calc(100% + 10px);
+  right:50px;
+  width:min(290px, calc(100vw - 28px));
+  padding:14px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:0 18px 46px rgba(16,24,40,.13);
+  z-index:100;
+}
+.settings-popover[hidden]{display:none}
+.settings-popover-title{
+  color:#1d2939;
+  font-size:.82rem;
+  font-weight:800;
+  margin-bottom:10px;
+}
+.scale-options{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+}
+.scale-option{
+  min-height:36px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#fff;
+  color:#475467;
+  font:700 .75rem 'Manrope','Segoe UI',Arial,sans-serif;
+  cursor:pointer;
+}
+.scale-option:hover{background:#f8fafc}
+.scale-option.active{
+  border-color:#9bc2ff;
+  background:#edf5ff;
+  color:#1677ff;
+}
+.settings-popover-hint{
+  color:#98a2b3;
+  font-size:.68rem;
+  line-height:1.5;
+  margin-top:10px;
+}
+@media(max-width:560px){
+  .settings-popover{
+    right:0;
+  }
+}
+
+
+html{
+  font-size:100%;
+  -webkit-text-size-adjust:100%;
+}
+body{min-width:0}
+.main{
+  min-height:calc(100vh - 68px);
+  padding:clamp(18px,4vw,42px);
+}
+.card{
+  width:min(100%, 620px);
+  padding:clamp(32px,5vw,52px) clamp(20px,4vw,34px);
+}
+.code{
+  font-size:clamp(3.6rem,9vw,4.8rem);
+}
+h1{
+  font-size:clamp(1.25rem,3vw,1.55rem);
+}
+.actions{
+  flex-wrap:wrap;
+}
+@media(max-width:520px){
+  .topbar{padding-inline:16px}
+  .settings-btn{padding-inline:10px}
+  .avatar{width:34px;height:34px}
+  .actions .btn{width:100%}
+}

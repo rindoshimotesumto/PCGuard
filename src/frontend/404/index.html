@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeviceHub — 404</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div></div>
+  <div class="top-actions">
+    <button class="settings-btn" id="settingsBtn" type="button" aria-haspopup="true" aria-controls="settingsPopover">Настройки</button>
+    <div class="avatar" aria-label="Профиль администратора">АП</div>
+    <div class="settings-popover" id="settingsPopover" hidden>
+  <div class="settings-popover-title">Масштаб интерфейса</div>
+  <div class="scale-options" role="group" aria-label="Масштаб интерфейса">
+    <button type="button" class="scale-option" data-scale="0.9">90%</button>
+    <button type="button" class="scale-option active" data-scale="1">100%</button>
+    <button type="button" class="scale-option" data-scale="1.1">110%</button>
+    <button type="button" class="scale-option" data-scale="1.25">125%</button>
+  </div>
+  <div class="settings-popover-hint">Также поддерживается обычный масштаб браузера Ctrl + / Ctrl −.</div>
+</div>
+  </div>
+</header>
+
+<main class="main">
+  <section class="card">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 9h.01"></path>
+        <path d="M15 9h.01"></path>
+        <path d="M9.5 15.5c1.5-1.2 3.5-1.2 5 0"></path>
+        <circle cx="12" cy="12" r="9"></circle>
+      </svg>
+    </div>
+
+    <div class="code">404</div>
+    <h1>Страница не найдена</h1>
+    <p>Запрашиваемая страница не существует, была перемещена или больше недоступна.</p>
+
+    <div class="actions">
+      <a class="btn primary" href="../dashboard/index.html">Вернуться на дашборд</a>
+      <button class="btn secondary" id="backBtn" type="button">Назад</button>
+    </div>
+  </section>
+</main>
+  <script src="js/app.js" defer></script>
+</body>
+</html>

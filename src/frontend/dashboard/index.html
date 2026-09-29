@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeviceHub — Устройства</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  
+
+  <main class="main">
+    <header class="topbar">
+  <div></div>
+  <div class="top-right">
+    <button class="settings-btn" id="settingsBtn" type="button" aria-haspopup="true" aria-controls="settingsPopover">Настройки</button>
+    <div class="avatar" aria-label="Профиль администратора">АП</div>
+    <div class="settings-popover" id="settingsPopover" hidden>
+  <div class="settings-popover-title">Масштаб интерфейса</div>
+  <div class="scale-options" role="group" aria-label="Масштаб интерфейса">
+    <button type="button" class="scale-option" data-scale="0.9">90%</button>
+    <button type="button" class="scale-option active" data-scale="1">100%</button>
+    <button type="button" class="scale-option" data-scale="1.1">110%</button>
+    <button type="button" class="scale-option" data-scale="1.25">125%</button>
+  </div>
+  <div class="settings-popover-hint">Также поддерживается обычный масштаб браузера Ctrl + / Ctrl −.</div>
+</div>
+  </div>
+</header>
+
+    <section class="content">
+      <div class="heading">
+        <h1>Устройства</h1>
+        <div class="subtitle">Список компьютеров с Windows в вашей инфраструктуре</div>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><span class="card-kicker blue">Обзор</span></div>
+          <div class="card-value" id="totalDevices">0</div>
+          <div class="card-label">Всего устройств</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><span class="card-kicker green">Состояние</span></div>
+          <div class="card-value" id="onlineDevices">0</div>
+          <div class="card-label">Онлайн</div>
+        </div>
+        <div class="card">
+          <div class="card-top"><span class="card-kicker gray">Состояние</span></div>
+          <div class="card-value" id="offlineDevices">0</div>
+          <div class="card-label">Офлайн</div>
+        </div>
+      </div>
+
+      <div class="filters">
+        <input id="search" class="input" type="search" autocomplete="off" aria-label="Поиск устройств" placeholder="Поиск по имени, пользователю, IP...">
+
+        <div class="custom-select" data-name="status" data-value="">
+          <button type="button" class="select-trigger">Статус: Все</button>
+          <div class="select-menu">
+            <div class="select-option active" data-value="" data-label="Статус: Все">Статус: Все</div>
+            <div class="select-option" data-value="Онлайн" data-label="Статус: Онлайн">Онлайн</div>
+            <div class="select-option" data-value="Офлайн" data-label="Статус: Офлайн">Офлайн</div>
+          </div>
+        </div>
+
+        <div class="custom-select" data-name="os" data-value="">
+          <button type="button" class="select-trigger">ОС: Все</button>
+          <div class="select-menu">
+            <div class="select-option active" data-value="" data-label="ОС: Все">ОС: Все</div>
+            <div class="select-option" data-value="Windows 11" data-label="ОС: Windows 11">Windows 11</div>
+            <div class="select-option" data-value="Windows 10" data-label="ОС: Windows 10">Windows 10</div>
+          </div>
+        </div>
+
+        <div class="custom-select searchable" data-name="group" data-value="">
+          <button type="button" class="select-trigger">Отдел: Все</button>
+          <div class="select-menu">
+            <div class="select-search-wrap">
+              <input type="search" class="select-search" autocomplete="off" aria-label="Поиск отдела" placeholder="Поиск отдела...">
+            </div>
+            <div class="options-scroll" id="departmentOptions">
+              <div class="select-option active" data-value="" data-label="Отдел: Все">Отдел: Все</div>
+            </div>
+            <div class="empty-option">Ничего не найдено</div>
+          </div>
+        </div>
+
+        <button id="resetBtn" class="btn">Сбросить</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:24%">Имя устройства</th>
+              <th style="width:16%">Пользователь</th>
+              <th style="width:14%">ОС</th>
+              <th style="width:15%">IP-адрес</th>
+              <th style="width:16%">Отдел</th>
+              <th style="width:15%">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="deviceRows"></tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <span id="shownText">Нет устройств</span>
+        <span class="muted-note">0 устройств</span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="js/app.js" defer></script>
+</body>
+</html>

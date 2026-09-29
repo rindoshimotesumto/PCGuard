@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeviceHub — Устройство</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../dashboard/index.html">
+    <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg>
+    Назад к устройствам
+  </a>
+  <div class="top-actions">
+    <button class="settings-btn" id="settingsBtn" type="button" aria-haspopup="true" aria-controls="settingsPopover">Настройки</button>
+    <div class="avatar" aria-label="Профиль администратора">АП</div>
+    <div class="settings-popover" id="settingsPopover" hidden>
+  <div class="settings-popover-title">Масштаб интерфейса</div>
+  <div class="scale-options" role="group" aria-label="Масштаб интерфейса">
+    <button type="button" class="scale-option" data-scale="0.9">90%</button>
+    <button type="button" class="scale-option active" data-scale="1">100%</button>
+    <button type="button" class="scale-option" data-scale="1.1">110%</button>
+    <button type="button" class="scale-option" data-scale="1.25">125%</button>
+  </div>
+  <div class="settings-popover-hint">Также поддерживается обычный масштаб браузера Ctrl + / Ctrl −.</div>
+</div>
+  </div>
+</header>
+
+<main class="content">
+  <section class="hero">
+    <div class="device-title">
+      <div class="device-icon" id="deviceOsIcon" hidden></div>
+      <div>
+        <h1 id="deviceTitle">Устройство</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-metrics" id="systemMetrics">
+    <div class="metric metric-primary" id="cpuMetricCard">
+      <div class="metric-head metric-head-pill-only">
+        <span class="metric-chip">CPU</span>
+      </div>
+      <div class="metric-body">
+        <div class="metric-val" id="cpuUsage">—</div>
+        <div class="metric-sub" id="cpuDetails">Нет данных</div>
+      </div>
+      <div class="bar"><span id="cpuBar" style="width:0%"></span></div>
+    </div>
+
+    <div class="metric metric-primary" id="ramMetricCard">
+      <div class="metric-head metric-head-pill-only">
+        <span class="metric-chip">RAM</span>
+      </div>
+      <div class="metric-body">
+        <div class="metric-val" id="ramUsage">—</div>
+        <div class="metric-sub" id="ramDetails">Нет данных</div>
+      </div>
+      <div class="bar"><span id="ramBar" style="width:0%"></span></div>
+    </div>
+
+    <div class="metric metric-primary" id="gpuMetricCard">
+      <div class="metric-head metric-head-pill-only">
+        <span class="metric-chip">GPU</span>
+      </div>
+      <div class="metric-body">
+        <div class="metric-val" id="gpuUsage">—</div>
+        <div class="metric-sub" id="gpuDetails">Нет данных</div>
+      </div>
+      <div class="bar"><span id="gpuBar" style="width:0%"></span></div>
+    </div>
+
+    <div id="diskMetricCards" class="disk-metric-fragment"></div>
+
+    <div class="metric metric-internet" id="internetMetricCard">
+      <div class="metric-head metric-head-pill-only">
+        <span class="metric-chip">Интернет</span>
+      </div>
+
+      <div class="internet-values">
+        <div class="internet-value-block">
+          <div class="internet-value-label">Загрузка</div>
+          <div class="internet-value" id="trafficDownloadMetric">—</div>
+        </div>
+
+        <div class="internet-value-divider"></div>
+
+        <div class="internet-value-block">
+          <div class="internet-value-label">Отправка</div>
+          <div class="internet-value" id="trafficUploadMetric">—</div>
+        </div>
+      </div>
+
+      <div class="metric-sub internet-period" id="trafficPeriod">Нет данных</div>
+    </div>
+  </section>
+
+  <section class="layout">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Скриншот экрана</div>
+          <div class="panel-sub">Последний снимок рабочего стола</div>
+        </div>
+        <span class="badge gray">Нет данных</span>
+      </div>
+      <div class="screen-wrap">
+        <div class="screen empty-screen" id="screenContainer">
+          <img id="screenImage" class="screen-image" alt="Текущий скриншот устройства" title="Открыть полностью" tabindex="0" hidden>
+          <div class="screen-empty" id="screenEmpty">
+            <div class="screen-empty-title" id="screenEmptyTitle">Загрузка скриншота...</div>
+            <div class="screen-empty-sub" id="screenEmptySub">Получение изображения с устройства</div>
+          </div>
+        </div>
+        <div class="screen-caption">
+          <div class="screen-caption-left">
+            <span id="screenResolution">—</span>
+            <span id="screenSize" class="screen-meta-muted">—</span>
+            <span id="screenMonitorLabel" class="screen-monitor-label" hidden></span>
+          </div>
+
+          <div class="screen-navigation" id="screenNavigation" hidden>
+            <button class="screen-nav-btn" id="screenPrevBtn" type="button" aria-label="Предыдущий экран">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m15 18-6-6 6-6"></path>
+              </svg>
+            </button>
+            <span class="screen-counter" id="screenCounter">1 / 1</span>
+            <button class="screen-nav-btn" id="screenNextBtn" type="button" aria-label="Следующий экран">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 18 6-6-6-6"></path>
+              </svg>
+            </button>
+          </div>
+
+          <span id="screenTimestamp">Загрузка...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Информация о системе</div>
+          <div class="panel-sub">Основные характеристики устройства</div>
+        </div>
+        <button id="copySpecsBtn" class="copy-specs-btn" type="button" title="Скопировать характеристики" aria-label="Скопировать характеристики">
+          <svg id="copySpecsIcon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="9" y="9" width="10" height="10" rx="2"></rect>
+            <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Пользователь</div>
+          <div class="info-value" id="systemUsername">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Имя устройства</div>
+          <div class="info-value" id="systemDeviceName">—</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">ОС</div>
+          <div class="info-value" id="systemOs">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Архитектура</div>
+          <div class="info-value" id="systemArchitecture">—</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">CPU</div>
+          <div class="info-value" id="systemCpuInfo">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">GPU</div>
+          <div class="info-value" id="systemGpuInfo">—</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">RAM</div>
+          <div class="info-value" id="systemRamInfo">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">IP-адрес</div>
+          <div class="info-value" id="systemIpAddress">—</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">Диски</div>
+          <div class="info-value" id="systemDisksInfo">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Мониторы</div>
+          <div class="info-value" id="systemMonitorsInfo">—</div>
+        </div>
+
+        <div class="info-item info-item-full">
+          <div class="info-label">Принтеры</div>
+          <div class="info-value" id="systemPrintersInfo">—</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="activity-panel">
+    <div class="activity-head">
+      <div class="activity-title-row">
+        <div>
+          <div class="panel-title" id="activityTitle">Запущенный софт</div>
+          <div class="activity-description" id="activityDescription">Активные приложения и процессы на устройстве</div>
+        </div>
+        <input id="activitySearch" class="activity-search" type="search" autocomplete="off" aria-label="Поиск в активности устройства" placeholder="Поиск процесса...">
+      </div>
+
+      <div class="activity-tabs" role="tablist" aria-label="Активность устройства">
+        <button class="activity-tab active" type="button" role="tab" aria-selected="true" data-tab="processes">Запущенный софт</button>
+        <button class="activity-tab" type="button" role="tab" aria-selected="false" data-tab="web">Интернет-трафик</button>
+        <button class="activity-tab" type="button" role="tab" aria-selected="false" data-tab="installed">Установленные программы</button>
+      </div>
+    </div>
+
+    <div id="processesView" class="activity-view active">
+      <div class="activity-table-scroll">
+<table>
+        <thead>
+          <tr>
+            <th style="width:34%">Приложение</th>
+            <th style="width:9%">PID</th>
+            <th style="width:9%">CPU</th>
+            <th style="width:9%">RAM</th>
+            <th style="width:9%">GPU</th>
+            <th style="width:13%">Статус</th>
+            <th style="width:17%">Запущено</th>
+          </tr>
+        </thead>
+        <tbody id="procRows"></tbody>
+      </table>
+</div>
+    </div>
+
+    <div id="webView" class="activity-view">
+      <div class="activity-table-scroll">
+<table>
+        <thead>
+          <tr>
+            <th style="width:46%">Сайт / URL</th>
+            <th style="width:18%">Общее время</th>
+            <th style="width:18%">Загрузка</th>
+            <th style="width:18%">Отправка</th>
+          </tr>
+        </thead>
+        <tbody id="webRows"></tbody>
+      </table>
+</div>
+    </div>
+
+    <div id="installedView" class="activity-view">
+      <div class="activity-table-scroll">
+<table>
+        <thead>
+          <tr>
+            <th style="width:36%">Программа</th>
+            <th style="width:18%">Версия</th>
+            <th style="width:28%">Издатель</th>
+            <th style="width:18%">Дата установки</th>
+          </tr>
+        </thead>
+        <tbody id="installedRows"></tbody>
+      </table>
+</div>
+    </div>
+  </section>
+
+</main>
+
+<div class="screenshot-modal" id="screenshotModal" hidden aria-hidden="true">
+  <div class="screenshot-modal-backdrop" id="screenshotModalBackdrop"></div>
+  <div class="screenshot-modal-content" role="dialog" aria-modal="true" aria-label="Просмотр скриншота">
+    <button class="screenshot-modal-close" id="screenshotModalClose" type="button" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+    <img id="screenshotModalImage" class="screenshot-modal-image" alt="Скриншот монитора">
+    <div class="screenshot-modal-meta" id="screenshotModalMeta"></div>
+  </div>
+</div>
+<script src="js/app.js" defer></script>
+</body>
+</html>
